@@ -2,12 +2,14 @@ package com.jongkeun.dashboard.repository;
 
 import com.jongkeun.dashboard.model.CustomerRank;
 import com.jongkeun.dashboard.model.DailySales;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -51,9 +53,13 @@ public class DashboardRepository {
     }
 
     public void saveSale(LocalDate saleDate, int customerId, BigDecimal amount) {
-        jdbcTemplate.update(
-                "INSERT INTO sales (sale_date, customer_id, amount) VALUES (?, ?, ?)",
-                saleDate, customerId, amount
-        );
+        try {
+            jdbcTemplate.update(
+                    "INSERT INTO sales (sale_date, customer_id, amount) VALUES (?, ?, ?)",
+                    saleDate, customerId, amount
+            );
+        } catch (DataIntegrityViolationException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
